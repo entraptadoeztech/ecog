@@ -1,0 +1,172 @@
+<!doctype html><html><head></head><body><!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Pong</title>
+	<style>
+		body {
+			margin: 0;
+			background: black;
+			color: white;
+			font-family: Arial, sans-serif;
+			text-align: center;
+		}
+
+		canvas {
+			display: block;
+			margin: auto;
+			background: black;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Splash Screen -->
+	<div id="splash-screen">
+		<h1 style="color:#facc15; font-size:18px;">This is meant for 2 players.</h1>
+		<p style="font-size:10px; color:gray; margin-top:10px;">A game ACTUALLY made by the Elite Composite Of Games.</p>
+	</div>
+
+	<h1>PONG 2 Player </h1>
+	<canvas id="game" width="800" height="400"></canvas>
+	<p>W / S = Left Paddle | ↑ / ↓ = Right Paddle | SPACE = Start / Pause</p>
+
+	<script>
+		const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const paddleWidth = 10;
+const paddleHeight = 80;
+
+const leftPaddle = {
+  x: 10,
+  y: canvas.height / 2 - paddleHeight / 2,
+  speed: 6
+};
+
+const rightPaddle = {
+  x: canvas.width - 20,
+  y: canvas.height / 2 - paddleHeight / 2,
+  speed: 6
+};
+
+const ball = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  radius: 8,
+  speedX: 5,
+  speedY: 5
+};
+
+let keys = {};
+let gameRunning = false;
+
+// Input
+document.addEventListener("keydown", e => {
+  keys[e.key] = true;
+
+  // Space to start / pause
+  if (e.key === " ") {
+    gameRunning = !gameRunning;
+  }
+});
+
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+// Update game state
+function update() {
+  if (!gameRunning) return;
+
+  // Left paddle
+  if (keys["w"] && leftPaddle.y > 0) leftPaddle.y -= leftPaddle.speed;
+  if (keys["s"] && leftPaddle.y < canvas.height - paddleHeight)
+    leftPaddle.y += leftPaddle.speed;
+
+  // Right paddle
+  if (keys["ArrowUp"] && rightPaddle.y > 0)
+    rightPaddle.y -= rightPaddle.speed;
+  if (keys["ArrowDown"] && rightPaddle.y < canvas.height - paddleHeight)
+    rightPaddle.y += rightPaddle.speed;
+
+  // Ball movement
+  ball.x += ball.speedX;
+  ball.y += ball.speedY;
+
+  // Wall collision
+  if (ball.y <= 0 || ball.y >= canvas.height) {
+    ball.speedY *= -1;
+  }
+
+  // Paddle collision
+  if (
+    ball.x - ball.radius < leftPaddle.x + paddleWidth &&
+    ball.y > leftPaddle.y &&
+    ball.y < leftPaddle.y + paddleHeight
+  ) {
+    ball.speedX *= -1;
+  }
+
+  if (
+    ball.x + ball.radius > rightPaddle.x &&
+    ball.y > rightPaddle.y &&
+    ball.y < rightPaddle.y + paddleHeight
+  ) {
+    ball.speedX *= -1;
+  }
+
+  // Reset ball if out of bounds
+  if (ball.x < 0 || ball.x > canvas.width) {
+    resetBall();
+  }
+}
+
+function resetBall() {
+  ball.x = canvas.width / 2;
+  ball.y = canvas.height / 2;
+  ball.speedX *= -1;
+  gameRunning = false;
+}
+
+// Draw everything
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Paddles
+  ctx.fillStyle = "white";
+  ctx.fillRect(leftPaddle.x, leftPaddle.y, paddleWidth, paddleHeight);
+  ctx.fillRect(rightPaddle.x, rightPaddle.y, paddleWidth, paddleHeight);
+
+  // Ball
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Center line
+  for (let i = 0; i < canvas.height; i += 20) {
+    ctx.fillRect(canvas.width / 2 - 1, i, 2, 10);
+  }
+
+  // Start / pause text
+  if (!gameRunning) {
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Press SPACE to Start", canvas.width / 2, canvas.height / 2);
+  }
+}
+
+// Game loop
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop();
+	</script>
+
+</body>
+
+</html></body><html>
