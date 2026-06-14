@@ -1088,3 +1088,37 @@ body {
     <div class="game-title">Zombie Alien Parasites</div>
   </div>
 </a>
+
+  </div>
+
+<script>
+
+/* ===== SEARCH ===== */
+document.getElementById("search").addEventListener("keyup", function() {
+  let filter = this.value.toLowerCase();
+  let games = document.querySelectorAll(".game-link");
+
+  games.forEach(game => {
+    let title = game.innerText.toLowerCase();
+    game.style.display = title.includes(filter) ? "block" : "none";
+  });
+});
+
+/* ===== CATEGORY FILTER ===== */
+function filterGames(category) {
+  let games = document.querySelectorAll(".game-link");
+
+  games.forEach(game => {
+    if (category === "all") {
+      game.style.display = "block";
+    } else {
+      let cats = game.getAttribute("data-category");
+      game.style.display = cats.includes(category) ? "block" : "none";
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
